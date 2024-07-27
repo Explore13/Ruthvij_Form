@@ -40,8 +40,8 @@ const generateQRCode = async (req, res, next) => {
 
     // Overlay QR code on the base image
     await overlayQRCodeOnImage(baseImagePath, qrCodePath, outputPath);
+    await fs.promises.unlink(qrCodePath);
     req.qrCodePath = outputPath;
-
     next();
   } catch (error) {
     console.error('Error generating QR code:', error.message);
