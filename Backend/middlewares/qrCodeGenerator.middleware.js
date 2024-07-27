@@ -40,7 +40,7 @@ const generateQRCode = async (req, res, next) => {
 
     // Overlay QR code on the base image
     await overlayQRCodeOnImage(baseImagePath, qrCodePath, outputPath);
-    await fs.promises.unlink(qrCodePath);
+    fs.unlinkSync(qrCodePath);
     req.qrCodePath = outputPath;
     next();
   } catch (error) {
