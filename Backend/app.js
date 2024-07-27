@@ -24,7 +24,7 @@ app.use(express.static("public"));
 
 // Define routes
 app.get("/",(req,res)=>{
-  res.send("Hello from Server");
+  res.json("Hello from Server");
 });
 app.use("/sendEmail", router);
 // Error handling middleware
