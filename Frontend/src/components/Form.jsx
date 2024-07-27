@@ -56,7 +56,7 @@ const Form = () => {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:3000/api/v1/user/sendEmail', formData, {
+      const response = await axios.post('https://ruthvij-form-backend.vercel.app/api/v1/user/sendEmail', formData, {
         headers: {
           'Content-Type': 'application/json',
         },
