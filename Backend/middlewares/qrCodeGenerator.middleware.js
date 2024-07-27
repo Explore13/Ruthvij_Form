@@ -1,9 +1,10 @@
-import { overlayQRCodeOnImage } from '../utils/imageUtils.utils.js';
+import { overlayQRCodeOnImage } from '../utils/imageUtils.js';
 import QRCode from 'qrcode';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
+import os from 'os';
 
-// Middleware function to generate QR code
 const generateQRCode = async (req, res, next) => {
   try {
     const { name, rollNumber } = req.body;
@@ -12,12 +13,17 @@ const generateQRCode = async (req, res, next) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
-    const qrText = `Name : ${name}\n "RollNumber" : ${rollNumber}`;
-    const qrCodePath = path.join('/tmp', `${rollNumber}.png`);
-    const baseImagePath = path.join('/tmp', 'invitationCard.png'); // Adjust if needed
-    const outputPath = path.join('/tmp', `invitation_${rollNumber}.png`);
+    const qrText = `Name: ${name}\nRollNumber: ${rollNumber}`;
+    
+    // Create temporary directory
+    const tempDir = path.join(os.tmpdir(), 'qr');
+    if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
 
-    // Generate QR code and save it to the /tmp directory
+    // Generate QR code and save it to the temporary folder
+    const qrCodePath = path.join(tempDir, `${rollNumber}.png`);
+    const baseImagePath = path.join(tempDir, 'invitationCard.png');
+    const outputPath = path.join(tempDir, `invitation_${rollNumber}.png`);
+
     await QRCode.toFile(qrCodePath, qrText, {
       width: 300,
       color: {
@@ -26,21 +32,21 @@ const generateQRCode = async (req, res, next) => {
       },
     });
 
-    // Overlay QR code on the base image
-    const data = await overlayQRCodeOnImage(baseImagePath, qrCodePath, outputPath);
-    console.log("QR attached ");
+    // Ensure base image is available in the temp folder or handle the case where it's not
+    if (!fs.existsSync(baseImagePath)) {
+      // You may need to handle this error or provide a default image
+      return res.status(500).json({ error: 'Base image not found' });
+    }
 
-    // Attach the combined image file path to the request object
+    // Overlay QR code on the base image
+    await overlayQRCodeOnImage(baseImagePath, qrCodePath, outputPath);
     req.qrCodePath = outputPath;
 
-    console.log("Outputpath passed");
-    
     next();
   } catch (error) {
     console.error('Error generating QR code:', error.message);
     res.status(500).json({ error: 'Failed to generate QR code' });
   }
 };
-
 
 export { generateQRCode };
