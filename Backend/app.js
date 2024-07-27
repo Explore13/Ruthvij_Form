@@ -8,7 +8,7 @@ const app = express();
 // Use Helmet to enhance security
 app.use(helmet());
 app.use(cors({
-  origin: 'http://localhost:5173', // Allow requests from this origin
+  origin: 'https://ruthvij-form.vercel.app', // Allow requests from this origin
   methods: ['GET', 'POST'], // Allow these HTTP methods
   allowedHeaders: ['Content-Type'] // Allow these headers
 }));
