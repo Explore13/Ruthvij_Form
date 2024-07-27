@@ -26,7 +26,7 @@ app.use(express.static("public"));
 app.get("/",(req,res)=>{
   res.json("Hello from Server");
 });
-app.use("/sendEmail", router);
+app.use("/api", router);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
