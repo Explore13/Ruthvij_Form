@@ -62,7 +62,7 @@ const sendMail = async (receiverEmailID, qrCodePath, name) => {
     console.log("Email Sent");
 
     // Delete the QR code and image files after sending the email
-    fs.unlinkSync(qrCodePath); // Deletes the QR code image
+    await fs.promises.unlink(qrCodePath); // Deletes the QR code image
     console.log(`Deleted QR code file: ${qrCodePath}`);
 
     // If you have other files to delete, include them here
