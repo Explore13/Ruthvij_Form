@@ -60,6 +60,13 @@ const sendMail = async (receiverEmailID, qrCodePath, name) => {
 
     const info = await auth.sendMail(receiver(receiverEmailID, qrCodePath, name));
     console.log("Email Sent");
+
+    // Delete the QR code and image files after sending the email
+    fs.unlinkSync(qrCodePath); // Deletes the QR code image
+    console.log(`Deleted QR code file: ${qrCodePath}`);
+
+    // If you have other files to delete, include them here
+    // fs.unlinkSync(anotherFilePath); // Uncomment and replace with your file paths
     return info;
   } catch (error) {
     console.error("Error sending mail:", error.message);
@@ -68,9 +75,3 @@ const sendMail = async (receiverEmailID, qrCodePath, name) => {
 };
 
 export { sendMail };
-
-/*
-<p style="text-align: center;">
-            <a href="cid:qrCode" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;" target="_blank" rel="noopener noreferrer">RSVP Now</a>
-          </p>
-*/
