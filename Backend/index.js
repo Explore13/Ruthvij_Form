@@ -1,17 +1,11 @@
-import { app } from "./app.js";
-import dotenv from "dotenv";
-import cors from 'cors';
+import { app } from './app.js';
+import dotenv from 'dotenv';
 
-// Load environment variables from .env file
-dotenv.config({ path: "./.env" });
-app.use(cors({
-  origin: "https://ruthvij-form.vercel.app" // Allow requests from this origin
-}));
+dotenv.config(); // Load environment variables
 
-// Set the port from environment variables or default to 3000
 const PORT = process.env.PORT || 3000;
 
-// Start the server and listen on the specified port
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 }).on('error', (err) => {
