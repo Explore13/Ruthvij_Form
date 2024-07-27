@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // Define routes
-app.use("/api/v1/user", router);
+app.use("/sendEmail", router);
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
