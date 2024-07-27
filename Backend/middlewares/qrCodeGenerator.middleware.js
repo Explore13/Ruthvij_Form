@@ -16,13 +16,14 @@ const generateQRCode = async (req, res, next) => {
     const qrText = `Name: ${name}\nRollNumber: ${rollNumber}`;
     
     // Create temporary directory
-    const tempDir = path.join(os.tmpdir(), 'qr');
-    if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
+    const tempDir = os.tmpdir(); // Use default temp directory
+    const qrFolder = path.join(tempDir, 'qr'); // Create a qr folder in temp directory
+    if (!fs.existsSync(qrFolder)) fs.mkdirSync(qrFolder);
 
-    // Define file paths
-    const qrCodePath = path.join(tempDir, `${rollNumber}.png`);
-    const baseImagePath = path.join(tempDir, 'invitationCard.png');
-    const outputPath = path.join(tempDir, `invitation_${rollNumber}.png`);
+    // Paths for QR code and base image
+    const qrCodePath = path.join(qrFolder, `${rollNumber}.png`);
+    const baseImagePath = path.join('tmp/qr', 'invitationCard.png'); // Path relative to project root
+    const outputPath = path.join(qrFolder, `invitation_${rollNumber}.png`);
 
     // Generate QR code and save it to the temporary folder
     await QRCode.toFile(qrCodePath, qrText, {
@@ -33,23 +34,14 @@ const generateQRCode = async (req, res, next) => {
       },
     });
 
-    console.log(`QR Code generated at: ${qrCodePath}`);
-
-    // Ensure base image is available in the temp folder
+    // Ensure base image is available in the temp folder or handle the case where it's not
     if (!fs.existsSync(baseImagePath)) {
-      console.error(`Base image not found at: ${baseImagePath}`);
-      return res.status(500).json({ error: 'Base image not found' });
+      return res.status(500).json({ error: `Base image not found at: ${baseImagePath}` });
     }
 
     // Overlay QR code on the base image
     await overlayQRCodeOnImage(baseImagePath, qrCodePath, outputPath);
-
-    console.log(`Overlay image saved at: ${outputPath}`);
-
-    // Clean up temporary files
-    fs.unlinkSync(qrCodePath);
-
-    // Attach the path of the output image to the request object
+    fs.unlinkSync(qrCodePath); // Delete the QR code file
     req.qrCodePath = outputPath;
     next();
   } catch (error) {
