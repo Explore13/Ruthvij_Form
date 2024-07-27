@@ -17,13 +17,14 @@ const generateQRCode = async (req, res, next) => {
     
     // Create temporary directory
     const tempDir = path.join(os.tmpdir(), 'qr');
-    if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir);
+    if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 
-    // Generate QR code and save it to the temporary folder
+    // Define file paths
     const qrCodePath = path.join(tempDir, `${rollNumber}.png`);
     const baseImagePath = path.join(tempDir, 'invitationCard.png');
     const outputPath = path.join(tempDir, `invitation_${rollNumber}.png`);
 
+    // Generate QR code and save it to the temporary folder
     await QRCode.toFile(qrCodePath, qrText, {
       width: 300,
       color: {
@@ -32,15 +33,23 @@ const generateQRCode = async (req, res, next) => {
       },
     });
 
-    // Ensure base image is available in the temp folder or handle the case where it's not
+    console.log(`QR Code generated at: ${qrCodePath}`);
+
+    // Ensure base image is available in the temp folder
     if (!fs.existsSync(baseImagePath)) {
-      // You may need to handle this error or provide a default image
+      console.error(`Base image not found at: ${baseImagePath}`);
       return res.status(500).json({ error: 'Base image not found' });
     }
 
     // Overlay QR code on the base image
     await overlayQRCodeOnImage(baseImagePath, qrCodePath, outputPath);
+
+    console.log(`Overlay image saved at: ${outputPath}`);
+
+    // Clean up temporary files
     fs.unlinkSync(qrCodePath);
+
+    // Attach the path of the output image to the request object
     req.qrCodePath = outputPath;
     next();
   } catch (error) {
