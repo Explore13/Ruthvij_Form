@@ -5,7 +5,7 @@ import cors from 'cors';
 // Load environment variables from .env file
 dotenv.config({ path: "./.env" });
 app.use(cors({
-  origin: process.env.CORS // Allow requests from this origin
+  origin: "http://localhost:5173" // Allow requests from this origin
 }));
 
 // Set the port from environment variables or default to 3000
