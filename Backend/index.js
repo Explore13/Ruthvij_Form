@@ -1,13 +1,11 @@
-import { app } from './app.js';
-import dotenv from 'dotenv';
+import express from 'express';
+import { app } from './app.js'; // Ensure this import is correct
 
-dotenv.config(); // Load environment variables
+const index = express();
+index.get('/', (req, res) => {
+  res.send('Hello from the server');
+});
 
-const PORT = process.env.PORT || 3000;
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-}).on('error', (err) => {
-  console.error(`Failed to start the server: ${err.message}`);
+index.listen(process.env.PORT || 3000, () => {
+  console.log(`Server running on port ${process.env.PORT || 3000}`);
 });
