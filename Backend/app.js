@@ -23,6 +23,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // Define routes
+app.get("/",(req,res)=>{
+  res.send("Hello from Server");
+});
 app.use("/sendEmail", router);
 // Error handling middleware
 app.use((err, req, res, next) => {
