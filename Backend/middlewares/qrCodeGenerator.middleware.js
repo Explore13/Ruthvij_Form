@@ -1,4 +1,4 @@
-import { overlayQRCodeOnImage } from '../utils/imageUtils.js';
+import { overlayQRCodeOnImage } from '../utils/imageUtils.utils.js';
 import QRCode from 'qrcode';
 import path from 'path';
 import { fileURLToPath } from 'url';
