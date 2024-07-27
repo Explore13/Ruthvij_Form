@@ -1,9 +1,18 @@
 import { overlayQRCodeOnImage } from '../utils/imageUtils.utils.js';
 import QRCode from 'qrcode';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import fs from 'fs';
 import os from 'os';
+import axios from 'axios';
+
+const downloadImage = async (url, outputPath) => {
+  const response = await axios({
+    url,
+    responseType: 'arraybuffer', // Important to get the image data correctly
+  });
+
+  fs.writeFileSync(outputPath, response.data);
+};
 
 const generateQRCode = async (req, res, next) => {
   try {
@@ -22,8 +31,11 @@ const generateQRCode = async (req, res, next) => {
 
     // Paths for QR code and base image
     const qrCodePath = path.join(qrFolder, `${rollNumber}.png`);
-    const baseImagePath = path.join('tmp/qr', 'invitationCard.png'); // Path relative to project root
+    const baseImagePath = path.join(qrFolder, 'invitationCard.png'); // Path in temp directory
     const outputPath = path.join(qrFolder, `invitation_${rollNumber}.png`);
+
+    // Download the base image from GitHub
+    await downloadImage('https://raw.githubusercontent.com/Explore13/Ruthvij_Form/main/Backend/tmp/qr/invitationCard.png', baseImagePath);
 
     // Generate QR code and save it to the temporary folder
     await QRCode.toFile(qrCodePath, qrText, {
@@ -34,7 +46,7 @@ const generateQRCode = async (req, res, next) => {
       },
     });
 
-    // Ensure base image is available in the temp folder or handle the case where it's not
+    // Ensure base image is available in the temp folder
     if (!fs.existsSync(baseImagePath)) {
       return res.status(500).json({ error: `Base image not found at: ${baseImagePath}` });
     }
